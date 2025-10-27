@@ -5,7 +5,12 @@ import { Event } from './event.entity';
 import { EventInput } from './event.dto';
 
 class EventService {
-  private repository: Repository<Event> = dataSource.getRepository(Event);
+  private get repository(): Repository<Event> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Event);
+  }
 
   async create(payload: EventInput) {
     const event = this.repository.create(payload);

@@ -1,42 +1,45 @@
-# Architecture Brethren
+# Comprendre l'architecture Brethren (explication simple)
 
-## Vue d'ensemble
+Ce projet est découpé en trois blocs qui travaillent ensemble. Imaginez-les comme trois équipes qui se parlent en permanence.
 
-L'écosystème Brethren est composé de trois projets principaux :
+## 1. L'API (dossier `backend/`)
+- Construite avec **Node.js, Express et TypeORM**.
+- Elle garde le lien avec la base de données PostgreSQL.
+- Elle applique les règles de sécurité : connexion avec JWT, rôles, journal des actions, limite des requêtes.
+- Elle discute aussi en temps réel grâce à **Socket.io** pour le chat et les annonces instantanées.
 
-1. **Backend API (Node.js + Express + TypeORM)** – fournit les services REST, l'authentification JWT, la gestion des rôles et un serveur Socket.io pour la messagerie en temps réel.
-2. **Frontend Web (Angular 18 + Angular Material)** – tableau de bord administratif avec formulaires, statistiques et filtres hiérarchiques.
-3. **Application Mobile (Ionic + Angular)** – interface simplifiée pour les pasteurs et responsables sur le terrain.
+## 2. Le site web (dossier `frontend/`)
+- Créé avec **Angular 18** et **Angular Material**.
+- C'est le tableau de bord pour les équipes dirigeantes : formulaires CRUD, filtres par région/district/assemblée, graphiques.
+- Il appelle l'API via HTTPS pour afficher ou modifier les données.
 
-## Modules fonctionnels
+## 3. L'application mobile (dossier `mobile/`)
+- Basée sur **Ionic + Angular**.
+- Pensée pour un usage rapide sur le terrain : consulter un membre, voir les annonces, suivre un évènement.
 
-- Gestion des régions, districts et assemblées avec hiérarchies et statistiques.
-- Gestion des membres, transferts d'assemblées et exports (à implémenter côté client).
-- Gestion des ministères et des responsables.
-- Communication interne (chat, annonces, circulaires) via API + Socket.io.
-- Géolocalisation des assemblées (Google Maps à intégrer sur le front).
-- Statistiques consolidées (genre, statut, par région/district).
-- Authentification JWT, RBAC par rôle, audit des actions.
+## Comment les blocs communiquent
+1. Les utilisateurs se connectent sur le web ou le mobile.
+2. Les interfaces envoient leurs demandes à l'API (`https://.../api`).
+3. L'API vérifie les droits, lit/écrit dans PostgreSQL et renvoie une réponse.
+4. Pour la messagerie en direct, le navigateur ou le téléphone ouvre une connexion Socket.io avec le serveur.
 
-## Base de données
+## La base de données PostgreSQL
+- Les tables principales se trouvent dans `docs/schema.sql` (régions, districts, assemblées, membres, rôles, utilisateurs, messages, évènements...).
+- Chaque table contient des colonnes de suivi (`created_at`, `updated_at`).
+- TypeORM utilise les mêmes noms dans les entités pour rester synchronisé avec la base.
 
-Le script `schema.sql` décrit les tables principales avec relations et colonnes temporelles. Les entités TypeORM reflètent la même structure pour permettre la synchronisation avec PostgreSQL.
+## Sécurité (les règles de base)
+- Les mots de passe sont chiffrés avec **bcryptjs**.
+- Chaque appel protégé doit envoyer un **token JWT** (récupéré via `/auth/login`).
+- Un simple **rate limiter** évite les abus.
+- Les rôles (Admin national, Superviseur régional, etc.) sont définis dans `backend/src/modules/roles/role.constants.ts`.
 
-## Déploiement
+## Déploiement sans stress
+- Chaque projet a son **Dockerfile**.
+- `docker-compose.yml` lance PostgreSQL, l'API et le frontend d'un coup.
+- Un workflow GitHub Actions (`.github/workflows/ci.yml`) vérifie que le code compile.
 
-- Conteneurisation via Docker (voir `Dockerfile` et `docker-compose.yml`).
-- CI/CD GitHub Actions (voir `.github/workflows/ci.yml`).
-- Secrets à fournir : variables d'environnement backend (BDD + JWT), clés API Google Maps côté front.
-
-## Sécurité
-
-- Hash des mots de passe avec `bcryptjs`.
-- JWT signé avec secret configurable (`JWT_SECRET`).
-- Limiteur de débit simple au niveau Express.
-- Vérification des rôles pour chaque route sensible.
-
-## Tâches complémentaires
-
-- Intégration du module d'export CSV/PDF côté front.
-- Branchements effectifs sur Google Maps/Chart.js.
-- Ajout de tests unitaires et e2e.
+## Suite du travail
+- Brancher les vraies cartes (Google Maps) et graphiques (Chart.js) sur le frontend.
+- Ajouter les exports CSV/PDF côté web.
+- Rédiger plus de tests automatisés (unitaires et end-to-end).

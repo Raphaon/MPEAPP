@@ -5,7 +5,12 @@ import { Message } from './message.entity';
 import { MessageInput } from './message.dto';
 
 class MessageService {
-  private repository: Repository<Message> = dataSource.getRepository(Message);
+  private get repository(): Repository<Message> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Message);
+  }
 
   async create(senderId: string, payload: MessageInput) {
     const message = this.repository.create({

@@ -5,7 +5,12 @@ import { Assembly } from './assembly.entity';
 import { AssemblyInput } from './assembly.dto';
 
 class AssemblyService {
-  private repository: Repository<Assembly> = dataSource.getRepository(Assembly);
+  private get repository(): Repository<Assembly> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Assembly);
+  }
 
   create(payload: AssemblyInput) {
     const assembly = this.repository.create(payload);

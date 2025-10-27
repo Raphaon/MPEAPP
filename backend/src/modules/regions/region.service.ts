@@ -5,7 +5,12 @@ import { Region } from './region.entity';
 import { RegionInput } from './region.dto';
 
 class RegionService {
-  private repository: Repository<Region> = dataSource.getRepository(Region);
+  private get repository(): Repository<Region> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Region);
+  }
 
   async create(payload: RegionInput) {
     const region = this.repository.create(payload);

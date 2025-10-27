@@ -4,7 +4,12 @@ import { Role } from './role.entity';
 import { DEFAULT_ROLES } from './role.constants';
 
 class RoleService {
-  private repository: Repository<Role> = dataSource.getRepository(Role);
+  private get repository(): Repository<Role> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Role);
+  }
 
   async bootstrapDefaults() {
     for (const role of DEFAULT_ROLES) {

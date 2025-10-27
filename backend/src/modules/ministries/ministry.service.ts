@@ -5,7 +5,12 @@ import { Ministry } from './ministry.entity';
 import { MinistryInput } from './ministry.dto';
 
 class MinistryService {
-  private repository: Repository<Ministry> = dataSource.getRepository(Ministry);
+  private get repository(): Repository<Ministry> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Ministry);
+  }
 
   create(payload: MinistryInput) {
     const ministry = this.repository.create(payload);

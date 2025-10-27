@@ -7,7 +7,12 @@ import { RegisterInput } from './auth.dto';
 import { User } from './user.entity';
 
 class AuthService {
-  private repository: Repository<User> = dataSource.getRepository(User);
+  private get repository(): Repository<User> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(User);
+  }
 
   async register(payload: RegisterInput) {
     const existing = await this.repository.findOne({ where: { email: payload.email } });

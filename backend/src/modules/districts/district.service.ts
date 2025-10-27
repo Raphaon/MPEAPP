@@ -5,7 +5,12 @@ import { District } from './district.entity';
 import { DistrictInput } from './district.dto';
 
 class DistrictService {
-  private repository: Repository<District> = dataSource.getRepository(District);
+  private get repository(): Repository<District> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(District);
+  }
 
   create(payload: DistrictInput) {
     const district = this.repository.create(payload);

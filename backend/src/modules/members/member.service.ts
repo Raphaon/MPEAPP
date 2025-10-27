@@ -5,7 +5,12 @@ import { Member } from './member.entity';
 import { MemberInput } from './member.dto';
 
 class MemberService {
-  private repository: Repository<Member> = dataSource.getRepository(Member);
+  private get repository(): Repository<Member> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(Member);
+  }
 
   create(payload: MemberInput) {
     const member = this.repository.create(payload);

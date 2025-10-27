@@ -2,43 +2,48 @@
 
 Suite applicative pour la Mission du Plein Évangile du Cameroun (MPEC).
 
-## Projets
+## Ce qu'il y a dans ce dépôt
+- `backend/` : API Node.js (Express + TypeORM + Socket.io).
+- `frontend/` : site web Angular 18 (tableau de bord).
+- `mobile/` : application mobile Ionic + Angular.
+- `docs/` : guides simples, schémas et script SQL.
 
-- `backend/` : API Node.js (Express + TypeORM + Socket.io)
-- `frontend/` : Interface web Angular 18
-- `mobile/` : Application Ionic + Angular
-- `docs/` : Schémas, scripts SQL, guides
+## Démarrage rapide (pour un débutant)
+1. **Installer les outils** : Node.js 20+, Docker (facultatif), Git.
+2. **Cloner** le dépôt et se placer dedans :
+   ```bash
+   git clone <url>
+   cd MPEAPP
+   ```
+3. **Configurer la base de données** :
+   - Copier `backend/.env.example` vers `backend/.env` et adapter si nécessaire.
+   - Si vous avez Docker :
+     ```bash
+     docker compose up -d
+     ```
+   - Sinon, installez PostgreSQL manuellement et créez une base `brethren`.
+4. **Installer et lancer l'API** :
+   ```bash
+   cd backend
+   npm install
+   npm run start:dev
+   ```
+5. **Lancer le site web** (nouveau terminal) :
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
+6. **Lancer l'application mobile** (optionnel) :
+   ```bash
+   cd mobile
+   npm install
+   npm start
+   ```
 
-## Démarrage rapide
+Le tableau de bord est ensuite accessible sur http://localhost:4200 et l'API sur http://localhost:4000.
 
-1. Cloner le dépôt
-2. Configurer les variables d'environnement (`backend/.env.example`)
-3. Lancer la base PostgreSQL (voir `docker-compose.yml`)
-4. Installer les dépendances et démarrer chaque projet
-
-## Scripts utiles
-
-```bash
-# Backend
-cd backend
-npm install
-npm run start:dev
-
-# Frontend web
-cd frontend
-npm install
-npm start
-
-# Application mobile
-cd mobile
-npm install
-npm start
-```
-
-## Documentation
-
-Consulter le dossier `docs/` pour :
-- `schema.sql` : structure PostgreSQL
-- `ARCHITECTURE.md` : détails techniques
-- `API.md` : endpoints REST
-- `USER_GUIDE.md` : guide utilisateur
+## Aller plus loin
+- Suivez les explications pas à pas dans `docs/ARCHITECTURE.md`, `docs/API.md` et `docs/USER_GUIDE.md`.
+- Le script SQL complet se trouve dans `docs/schema.sql`.
+- Déploiement automatisé : voir `docker-compose.yml` et `.github/workflows/ci.yml`.

@@ -3,7 +3,12 @@ import { dataSource } from '../../config/typeorm';
 import { AuditLog } from './audit-log.entity';
 
 class AuditLogService {
-  private repository: Repository<AuditLog> = dataSource.getRepository(AuditLog);
+  private get repository(): Repository<AuditLog> {
+    if (!dataSource.isInitialized) {
+      throw new Error('Data source is not initialised yet');
+    }
+    return dataSource.getRepository(AuditLog);
+  }
 
   async record(action: string, userId?: string, context?: Record<string, unknown>, ipAddress?: string) {
     const entry = this.repository.create({ action, userId, context, ipAddress });

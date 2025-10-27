@@ -1,60 +1,31 @@
-# API Brethren
+# Mémo des routes API (langage simple)
 
-Base URL : `/api`
+Toutes les adresses ci-dessous sont accessibles sous `https://votre-domaine/api`.
+Sauf mention contraire, il faut envoyer le jeton JWT dans l'entête `Authorization: Bearer <token>`.
 
-## Authentification
+| Module | Verbe + chemin | Ce que ça fait | Qui peut l'utiliser ? |
+| ------ | -------------- | -------------- | ---------------------- |
+| Auth | `POST /auth/register` | Demander la création d'un compte (en attente de validation). | Un responsable qui ajoute un nouvel utilisateur. |
+| Auth | `POST /auth/login` | Se connecter et recevoir un jeton JWT. | Tout utilisateur actif. |
+| Régions | `GET /regions` | Voir la liste des régions (paginée). | Rôles avec droit de lecture. |
+| Régions | `POST /regions` | Ajouter une région. | Admin national. |
+| Districts | `GET /districts?regionId=<id>` | Lister les districts (optionnellement filtrés par région). | Rôles avec droit de lecture. |
+| Districts | `POST /districts` | Créer un district. | Admin national ou superviseur régional. |
+| Assemblées | `GET /assemblies?districtId=<id>` | Voir les assemblées (filtre possible par district). | Rôles avec droit de lecture. |
+| Assemblées | `POST /assemblies` | Ajouter une assemblée. | Chef de district ou supérieur. |
+| Membres | `GET /members` | Lister les membres avec filtres (région/district/assemblée). | Rôles autorisés. |
+| Membres | `POST /members` | Créer un nouveau membre. | Chef de district, pasteur, admin. |
+| Membres | `POST /members/:id/transfer` | Changer l'assemblée d'un membre. | Rôles avec droit de transfert. |
+| Ministères | `GET /ministries` | Voir les ministères. | Rôles autorisés. |
+| Ministères | `POST /ministries` | Ajouter un ministère. | Admin ou leader concerné. |
+| Évènements | `GET /events` | Voir les évènements. | Rôles autorisés. |
+| Évènements | `POST /events` | Créer ou mettre à jour un évènement. | Rôles autorisés. |
+| Messagerie | `GET /messages` | Voir les conversations (annonces, chat, circulaires). | Utilisateur connecté. |
+| Messagerie | `POST /messages` | Envoyer un message. | Utilisateur connecté. |
+| Statistiques | `GET /statistics/membership` | Obtenir les chiffres par genre/statut. | Rôles autorisés. |
+| Statistiques | `GET /statistics/regional` | Résumé par région (districts, assemblées, membres). | Rôles autorisés. |
+| Géolocalisation | `GET /geolocation/assemblies` | Obtenir les assemblées avec coordonnées. | Rôles autorisés. |
+| Géolocalisation | `GET /geolocation/dead-zones` | Voir les "zones mortes" (assemblées sans coordonnées). | Rôles autorisés. |
 
-### POST /auth/register
-- Crée un compte utilisateur en attente d'activation.
-
-### POST /auth/login
-- Authentifie l'utilisateur et renvoie un JWT.
-
-## Gestion territoriale
-
-### GET /regions
-- Liste paginée des régions.
-
-### POST /regions
-- Crée une région (Admin national).
-
-### GET /districts
-- Liste paginée des districts, filtrable par région.
-
-### GET /assemblies
-- Liste paginée des assemblées, filtrable par district.
-
-## Membres
-
-### GET /members
-- Liste paginée des membres avec filtres région/district/assemblée.
-
-### POST /members
-- Création d'un membre.
-
-### POST /members/:id/transfer
-- Transfert d'un membre vers une nouvelle assemblée.
-
-## Ministères
-
-CRUD complet via `/ministries`.
-
-## Évènements
-
-Routes `/events` pour créer/lister/mettre à jour des évènements.
-
-## Messagerie
-
-`/messages` pour récupérer et envoyer des messages (chat/circulaires/annonces).
-
-## Statistiques
-
-- `/statistics/membership`
-- `/statistics/regional`
-
-## Géolocalisation
-
-- `/geolocation/assemblies`
-- `/geolocation/dead-zones`
-
-Toutes les routes (hors `/auth`) exigent un JWT valide et respectent les règles RBAC définies dans `role.constants.ts`.
+> 💡 Astuce : pour tester rapidement, utilisez un outil comme Postman ou Insomnia.
+> Commencez par `POST /auth/login`, copiez le token reçu, puis ajoutez-le dans vos autres requêtes.
